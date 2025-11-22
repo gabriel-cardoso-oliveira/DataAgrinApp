@@ -47,3 +47,5 @@ fun getRoomDatabase(
         .setDriver(BundledSQLiteDriver())
         .build()
 }
+
+expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
