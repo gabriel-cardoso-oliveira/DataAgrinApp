@@ -1,5 +1,6 @@
 package com.dataagrin.project
 
+import SetStatusBar
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -35,6 +36,8 @@ fun App() {
     KoinApplication(application = {
         modules(appModule)
     }) {
+        SetStatusBar(isDarkIcons = true)
+
         MaterialTheme {
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
