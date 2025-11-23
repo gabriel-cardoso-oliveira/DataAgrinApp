@@ -42,6 +42,10 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-plugin" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose-plugin" }
 
+# Compose Icons
+compose-icons-core = { group = "org.jetbrains.compose.material", name = "material-icons-core", version.ref = "composeMultiplatform" }
+compose-icons-extended = { group = "org.jetbrains.compose.material", name = "material-icons-extended", version.ref = "composeMultiplatform" }
+
 # Coroutines
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
