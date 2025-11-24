@@ -4,13 +4,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,8 +41,8 @@ fun SummaryCard(label: String, count: Int, color: Color, modifier: Modifier = Mo
 @Composable
 fun StatusBadge(status: TaskStatus) {
     val color = when(status) {
-        TaskStatus.COMPLETED -> Color(0XFF16a34a)
-        TaskStatus.IN_PROGRESS -> Color(0xFF2563eb)
+        TaskStatus.COMPLETED -> MaterialTheme.colorScheme.primaryContainer
+        TaskStatus.IN_PROGRESS -> MaterialTheme.colorScheme.secondary
         else -> Color.Gray
     }
     val text = when(status) {
@@ -86,4 +93,36 @@ fun ActionButton(
     ) {
         Text(text)
     }
+}
+
+@Composable
+fun StandardTextField(value: String, onValueChange: (String) -> Unit, label: String) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp)
+    )
+}
+
+@Composable
+fun TimePickerField(value: String, label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { },
+        label = { Text(label) },
+        modifier = modifier.clickable(onClick = onClick),
+        readOnly = true,
+        enabled = false,
+        trailingIcon = { Icon(Icons.Default.AccessTime, "Hora") },
+        colors = OutlinedTextFieldDefaults.colors(
+            disabledTextColor = MaterialTheme.colorScheme.onSurface,
+            disabledContainerColor = Color.Transparent,
+            disabledBorderColor = MaterialTheme.colorScheme.outline,
+            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        shape = RoundedCornerShape(10.dp)
+    )
 }

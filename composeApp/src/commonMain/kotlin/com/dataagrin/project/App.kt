@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,6 +29,7 @@ import com.dataagrin.project.di.appModule
 import com.dataagrin.project.ui.ActivityLogScreen
 import com.dataagrin.project.ui.DashboardScreen
 import com.dataagrin.project.ui.WeatherScreen
+import com.dataagrin.project.ui.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
 
@@ -40,7 +40,7 @@ fun App() {
     }) {
         SetStatusBar(isDarkIcons = true)
 
-        MaterialTheme {
+        AppTheme {
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
@@ -84,10 +84,9 @@ fun MainScreen(
     )
 
     Scaffold(
-        containerColor = Color( 0xFFf9fafb),
         bottomBar = {
             NavigationBar(
-                containerColor = Color(0xFFf0f2f5)
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
             ) {
                 items.forEach { (route, icon) ->
                     val label = labels[route] ?: ""
@@ -95,7 +94,8 @@ fun MainScreen(
                         selected = currentRoute == route,
                         onClick = { onNavigate(route) },
                         colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = Color(0xFFe0e6eb)
+                            indicatorColor = MaterialTheme.colorScheme.tertiary,
+                            selectedTextColor = MaterialTheme.colorScheme.onTertiary
                         ),
                         icon = { Icon(icon, contentDescription = label) },
                         label = { Text(label) }
@@ -111,7 +111,7 @@ fun MainScreen(
 @Preview
 @Composable
 fun AppPreview() {
-    MaterialTheme {
+    AppTheme {
         var currentRoute by remember { mutableStateOf("dashboard") }
         MainScreen(
             currentRoute = currentRoute,

@@ -12,9 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -47,8 +44,8 @@ fun DashboardScreen(viewModel: TaskViewModel = koinInject()) {
         Text("Tarefas de Hoje", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
 
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SummaryCard("Pendente", pending, Color(0xFF059669), modifier = Modifier.weight(1f))
-            SummaryCard("Ativo", active, Color(0xFF2563EB), modifier = Modifier.weight(1f))
+            SummaryCard("Pendente", pending, MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f))
+            SummaryCard("Ativo", active, MaterialTheme.colorScheme.secondary, modifier = Modifier.weight(1f))
         }
 
         Row(modifier = Modifier.padding(bottom = 16.dp).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -71,7 +68,7 @@ fun TaskItem(task: Task, onStatusChange: (String, TaskStatus) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
@@ -87,8 +84,8 @@ fun TaskItem(task: Task, onStatusChange: (String, TaskStatus) -> Unit) {
                     ActionButton(
                         text = "Iniciar",
                         onClick = { onStatusChange(task.id, TaskStatus.IN_PROGRESS) },
-                        containerColor = Color(0xFFeff6ff),
-                        contentColor = Color(0xFF2563eb),
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -96,8 +93,8 @@ fun TaskItem(task: Task, onStatusChange: (String, TaskStatus) -> Unit) {
                     ActionButton(
                         text = "Concluir",
                         onClick = { onStatusChange(task.id, TaskStatus.COMPLETED) },
-                        containerColor = Color(0xFFf0fdf4),
-                        contentColor = Color(0XFF16a34a),
+                        containerColor = MaterialTheme.colorScheme.onPrimary,
+                        contentColor = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f)
                     )
                 }
