@@ -37,6 +37,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dataagrin.project.viewmodel.WeatherViewModel
 import org.koin.compose.koinInject
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 
 @Composable
 fun WeatherScreen(viewModel: WeatherViewModel = koinInject()) {
@@ -45,7 +52,11 @@ fun WeatherScreen(viewModel: WeatherViewModel = koinInject()) {
     LaunchedEffect(Unit) { viewModel.loadWeather() }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Clima no Campo", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             IconButton(onClick = { viewModel.loadWeather() }) { Icon(Icons.Default.Refresh, "Atualizar") }
         }
@@ -55,14 +66,20 @@ fun WeatherScreen(viewModel: WeatherViewModel = koinInject()) {
         state.weather?.let { weather ->
             Card(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF2563EB), contentColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary, contentColor = Color.White),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(modifier = Modifier.padding(24.dp)) {
                     Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                        // Cached Indicator
-                        Surface(color = (if(state.isCached) Color.Gray else Color.Green).copy(alpha = 0.2f), shape = RoundedCornerShape(4.dp)) {
-                            Text(if(state.isCached) "OFFLINE CACHE" else "LIVE", style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                        Surface(
+                            color = (if(state.isCached) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onPrimary).copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Text(
+                                if(state.isCached) "OFFLINE" else "ONLINE",
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
                         }
                     }
 
@@ -91,32 +108,118 @@ fun WeatherChart(tempString: String) {
     val temps = remember(tempString) { tempString.split(",").mapNotNull { it.toDoubleOrNull() } }
     if (temps.isEmpty()) return
 
-    Canvas(modifier = Modifier.fillMaxWidth().height(150.dp).padding(top = 16.dp)) {
-        val max = temps.maxOrNull() ?: 100.0
-        val min = temps.minOrNull() ?: 0.0
-        val range = max - min
-        val widthPerPoint = size.width / (temps.size - 1)
+    val chartColor = MaterialTheme.colorScheme.secondary
+    val gridColor = Color.LightGray.copy(alpha = 0.5f)
+    val textColor = Color.Gray
 
-        val path = Path()
-        temps.forEachIndexed { i, temp ->
-            val x = i * widthPerPoint
-            val y = size.height - ((temp - min) / range * size.height).toFloat()
-            if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+    val textMeasurer = rememberTextMeasurer()
+
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .padding(top = 16.dp, bottom = 16.dp, end = 16.dp)
+    ) {
+        val paddingBottom = 60f
+        val paddingLeft = 60f
+
+        val width = size.width - paddingLeft
+        val height = size.height - paddingBottom
+
+        val maxData = (temps.maxOrNull() ?: 30.0).coerceAtLeast(28.0) + 2
+        val minData = (temps.minOrNull() ?: 10.0).coerceAtMost(10.0) - 2
+        val range = maxData - minData
+
+        val widthPerPoint = width / (temps.size - 1).coerceAtLeast(1)
+
+        val steps = 4
+        for (i in 0..steps) {
+            val priceRatio = i.toFloat() / steps
+            val yPos = height - (priceRatio * height)
+            val tempLabel = minData + (range * priceRatio)
+
+            drawLine(
+                color = gridColor,
+                start = Offset(paddingLeft, yPos),
+                end = Offset(size.width, yPos),
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f),
+                strokeWidth = 1.dp.toPx()
+            )
+
+            drawText(
+                textMeasurer = textMeasurer,
+                text = "${tempLabel.roundToInt()}°",
+                topLeft = Offset(0f, yPos - 20f),
+                style = TextStyle(color = textColor, fontSize = 12.sp)
+            )
         }
 
+        val strokePath = Path()
+        val fillPath = Path()
+
+        fun getOffset(index: Int, value: Double): Offset {
+            val x = paddingLeft + (index * widthPerPoint)
+            val y = height - ((value - minData) / range * height).toFloat()
+            return Offset(x, y)
+        }
+
+        var previousPoint = getOffset(0, temps[0])
+        strokePath.moveTo(previousPoint.x, previousPoint.y)
+        fillPath.moveTo(previousPoint.x, previousPoint.y)
+
+        for (i in 1 until temps.size) {
+            val currentPoint = getOffset(i, temps[i])
+
+            val controlPoint1 = Offset(previousPoint.x + (currentPoint.x - previousPoint.x) / 2, previousPoint.y)
+            val controlPoint2 = Offset(previousPoint.x + (currentPoint.x - previousPoint.x) / 2, currentPoint.y)
+
+            strokePath.cubicTo(
+                controlPoint1.x, controlPoint1.y,
+                controlPoint2.x, controlPoint2.y,
+                currentPoint.x, currentPoint.y
+            )
+
+            previousPoint = currentPoint
+        }
+
+        fillPath.addPath(strokePath)
+        fillPath.lineTo(previousPoint.x, height)
+        fillPath.lineTo(paddingLeft, height)
+        fillPath.close()
+
         drawPath(
-            path = path,
-            color = Color(0xFF2563EB),
+            path = fillPath,
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                    chartColor.copy(alpha = 0.3f),
+                    Color.Transparent
+                ),
+                startY = 0f,
+                endY = height
+            )
+        )
+
+        drawPath(
+            path = strokePath,
+            color = chartColor,
             style = Stroke(width = 3.dp.toPx())
         )
 
-        // Fill gradient
-        path.lineTo(size.width, size.height)
-        path.lineTo(0f, size.height)
-        path.close()
-        drawPath(
-            path = path,
-            brush = Brush.verticalGradient(colors = listOf(Color(0xFF2563EB).copy(alpha = 0.3f), Color.Transparent))
-        )
+        val labelInterval = (temps.size / 5).coerceAtLeast(1)
+
+        temps.forEachIndexed { index, _ ->
+            if (index % labelInterval == 0) {
+                val xPos = paddingLeft + (index * widthPerPoint)
+                val hour = (index % 24)
+                val timeLabel = "${hour.toString().padStart(2, '0')}:00"
+
+                drawText(
+                    textMeasurer = textMeasurer,
+                    text = timeLabel,
+                    topLeft = Offset(xPos - 15f, height + 10f),
+                    style = TextStyle(color = textColor, fontSize = 12.sp)
+                )
+            }
+        }
     }
 }
