@@ -2,6 +2,8 @@
 
 Este é um projeto de exemplo que demonstra um aplicativo de gerenciamento agrícola construído com Kotlin Multiplatform. Ele inclui funcionalidades como visualização do clima, gerenciamento de tarefas.
 
+### [Baixe o APK](https://drive.google.com/file/d/1tCGBcVG5LdtAqM1Nu3El69xIRCuYaAHf/view?usp=drive_link)
+
 ### Recursos:
 *   **Clima em Tempo Real:** Obtém a previsão do tempo com base na localização do dispositivo.
 *   **Gerenciamento de Tarefas:** Crie e acompanhe tarefas agrícolas.
