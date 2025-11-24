@@ -1,4 +1,4 @@
-package com.dataagrin.project.ui
+package com.dataagrin.project.utils
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*

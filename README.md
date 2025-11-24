@@ -12,7 +12,33 @@ Este é um projeto de exemplo que demonstra um aplicativo de gerenciamento agrí
 
 ## Começando
 
-### 1. Como Executar o Aplicativo
+### 1. Configurando o Supabase
+
+Para que o aplicativo se conecte ao Supabase, você precisa fornecer suas credenciais. Crie um arquivo chamado `local.properties` na raiz do projeto e adicione as seguintes informações:
+
+```properties
+supabase.url=SUA_URL_SUPABASE
+supabase.apikey=SUA_API_KEY_SUPABASE
+```
+
+**Importante:** Substitua `SUA_URL_SUPABASE` e `SUA_API_KEY_SUPABASE` pelas suas credenciais reais do Supabase. O arquivo `local.properties` é ignorado pelo Git para manter suas chaves seguras.
+
+### 2. Criando a Tabela de Tarefas
+
+No seu painel do Supabase, acesse o **SQL Editor** e execute o seguinte script para criar a tabela `tasks` necessária para o aplicativo:
+
+```sql
+CREATE TABLE public.tasks (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  area TEXT,
+  "time" TEXT,
+  status TEXT CHECK (status IN ('PENDING', 'IN_PROGRESS', 'COMPLETED')),
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+```
+
+### 3. Como Executar o Aplicativo
 
 #### Android
 

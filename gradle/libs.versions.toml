@@ -29,6 +29,7 @@ serialization = "1.9.0"
 navigation = "2.9.1"
 lifecycle = "2.9.6"
 moko-geo = "0.8.0"
+supabase = "3.2.6"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
@@ -77,6 +78,9 @@ androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navi
 androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
 
 moko-geo = { module = "dev.icerock.moko:geo", version.ref = "moko-geo" }
+
+# Supabase
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

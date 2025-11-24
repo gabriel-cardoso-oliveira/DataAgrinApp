@@ -2,10 +2,13 @@ package com.dataagrin.project.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class TaskStatus { PENDING, IN_PROGRESS, COMPLETED }
 
 @Entity(tableName = "tasks")
+@Serializable
 data class Task(
     @PrimaryKey val id: String,
     val title: String,
