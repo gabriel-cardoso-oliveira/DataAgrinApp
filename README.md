@@ -50,3 +50,8 @@ Este projeto segue a arquitetura **MVVM (Model-View-ViewModel)**, que promove um
 *   `./iosApp`: Contém o projeto Xcode para o aplicativo iOS.
 
 Saiba mais sobre [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html).
+
+
+## Próximos passos:
+*   Sincronizar os dados utilizando BaaS
+*   Testes unitários e de integração
