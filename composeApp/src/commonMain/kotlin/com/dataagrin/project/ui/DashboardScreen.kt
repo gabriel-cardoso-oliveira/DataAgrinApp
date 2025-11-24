@@ -8,14 +8,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,15 +47,15 @@ fun DashboardScreen(viewModel: TaskViewModel = koinInject()) {
         Text("Tarefas de Hoje", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
 
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SummaryCard("Pendente", pending, Color(0xFF059669))
-            SummaryCard("Ativo", active, Color(0xFF2563EB))
+            SummaryCard("Pendente", pending, Color(0xFF059669), modifier = Modifier.weight(1f))
+            SummaryCard("Ativo", active, Color(0xFF2563EB), modifier = Modifier.weight(1f))
         }
 
-        // Filtros
-        Row(modifier = Modifier.padding(bottom = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(selected = filter == null, onClick = { filter = null }, label = { Text("Todos") })
-            FilterChip(selected = filter == TaskStatus.PENDING, onClick = { filter = TaskStatus.PENDING }, label = { Text("Pendente") })
-            FilterChip(selected = filter == TaskStatus.IN_PROGRESS, onClick = { filter = TaskStatus.IN_PROGRESS }, label = { Text("Andamento") })
+        Row(modifier = Modifier.padding(bottom = 16.dp).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TaskFilterChip(text = "Todos", selected = filter == null) { filter = null }
+            TaskFilterChip(text = "Pendente", selected = filter == TaskStatus.PENDING) { filter = TaskStatus.PENDING }
+            TaskFilterChip(text = "Andamento", selected = filter == TaskStatus.IN_PROGRESS) { filter = TaskStatus.IN_PROGRESS }
+            TaskFilterChip(text = "Concluído", selected = filter == TaskStatus.COMPLETED) { filter = TaskStatus.COMPLETED }
         }
 
         LazyColumn {
@@ -67,7 +68,11 @@ fun DashboardScreen(viewModel: TaskViewModel = koinInject()) {
 
 @Composable
 fun TaskItem(task: Task, onStatusChange: (String, TaskStatus) -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFFFF)),
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                 Column {
@@ -78,31 +83,25 @@ fun TaskItem(task: Task, onStatusChange: (String, TaskStatus) -> Unit) {
             }
             Spacer(modifier = Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (task.status != TaskStatus.IN_PROGRESS)
-                    Button(onClick = { onStatusChange(task.id, TaskStatus.IN_PROGRESS) }) { Text("Iniciar") }
-                if (task.status != TaskStatus.COMPLETED)
-                    Button(onClick = { onStatusChange(task.id, TaskStatus.COMPLETED) }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF059669), contentColor = Color.White)) { Text("Concluir") }
+                if (task.status != TaskStatus.IN_PROGRESS) {
+                    ActionButton(
+                        text = "Iniciar",
+                        onClick = { onStatusChange(task.id, TaskStatus.IN_PROGRESS) },
+                        containerColor = Color(0xFFeff6ff),
+                        contentColor = Color(0xFF2563eb),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                if (task.status != TaskStatus.COMPLETED) {
+                    ActionButton(
+                        text = "Concluir",
+                        onClick = { onStatusChange(task.id, TaskStatus.COMPLETED) },
+                        containerColor = Color(0xFFf0fdf4),
+                        contentColor = Color(0XFF16a34a),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }
-}
-
-@Composable
-fun SummaryCard(label: String, count: Int, color: Color) {
-    Card(colors = CardDefaults.cardColors(containerColor = color, contentColor = Color.White), modifier = Modifier.width(150.dp)) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(label.uppercase(), style = MaterialTheme.typography.labelSmall)
-            Text(count.toString(), style = MaterialTheme.typography.headlineLarge)
-        }
-    }
-}
-
-@Composable
-fun StatusBadge(status: TaskStatus) {
-    val color = when(status) {
-        TaskStatus.COMPLETED -> Color.Green
-        TaskStatus.IN_PROGRESS -> Color.Blue
-        else -> Color.Gray
-    }
-    Text(status.name, color = color, style = MaterialTheme.typography.labelSmall)
 }

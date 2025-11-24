@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -82,13 +84,19 @@ fun MainScreen(
     )
 
     Scaffold(
+        containerColor = Color( 0xFFf9fafb),
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = Color(0xFFf0f2f5)
+            ) {
                 items.forEach { (route, icon) ->
                     val label = labels[route] ?: ""
                     NavigationBarItem(
                         selected = currentRoute == route,
                         onClick = { onNavigate(route) },
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = Color(0xFFe0e6eb)
+                        ),
                         icon = { Icon(icon, contentDescription = label) },
                         label = { Text(label) }
                     )
