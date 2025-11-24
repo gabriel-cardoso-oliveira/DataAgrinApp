@@ -56,6 +56,7 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.androidx.navigation.compose)
+            implementation(libs.moko.geo)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

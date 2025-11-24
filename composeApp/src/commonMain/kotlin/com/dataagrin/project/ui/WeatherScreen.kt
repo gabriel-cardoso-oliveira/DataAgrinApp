@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -84,11 +83,15 @@ fun WeatherScreen(viewModel: WeatherViewModel = koinInject()) {
                     }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Cloud, null, modifier = Modifier.size(64.dp))
+                        val weatherIcon = getWeatherIcon(weather.weatherCode)
+                        Icon(
+                            imageVector = weatherIcon,
+                            contentDescription = "Weather condition",
+                            modifier = Modifier.size(64.dp))
                         Spacer(Modifier.width(16.dp))
                         Column {
                             Text("${weather.temperature}°", style = MaterialTheme.typography.displayMedium)
-                            Text("Umidade: ${weather.humidity}%")
+                            Text("Umidade: ${weather.humidity}%" )
                         }
                     }
                 }

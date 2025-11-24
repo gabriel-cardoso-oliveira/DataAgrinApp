@@ -48,4 +48,4 @@ fun getRoomDatabase(
         .build()
 }
 
-expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
+expect fun getDatabaseBuilder(context: Any?): RoomDatabase.Builder<AppDatabase>
