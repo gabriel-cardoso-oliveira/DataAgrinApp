@@ -23,7 +23,7 @@ val appModule = module {
 
     // Repositories
     single { TaskRepository(get(), get()) }
-    single { ActivityRepository(get()) }
+    single { ActivityRepository(get(), get()) }
     single { WeatherRepository(get(), get()) }
 
     // ViewModels

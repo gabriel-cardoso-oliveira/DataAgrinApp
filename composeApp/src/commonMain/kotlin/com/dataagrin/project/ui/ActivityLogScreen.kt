@@ -61,8 +61,8 @@ fun ActivityLogScreen(viewModel: ActivityViewModel = koinInject()) {
         Spacer(modifier = Modifier.height(16.dp))
 
         if (isForm) {
-            ActivityForm { log ->
-                viewModel.addActivity(log)
+            ActivityForm { type, area, start, end, obs ->
+                viewModel.addTaskFromActivity(type, area, start, end, obs)
                 isForm = false
             }
         } else {
@@ -124,35 +124,33 @@ fun KmpTimePickerDialog(
 
 @OptIn(ExperimentalTime::class)
 @Composable
-fun ActivityForm(onSubmit: (ActivityLog) -> Unit) {
+fun ActivityForm(onSubmit: (String, String, String, String, String) -> Unit) {
     var type by remember { mutableStateOf("") }
     var area by remember { mutableStateOf("") }
     var start by remember { mutableStateOf("") }
     var end by remember { mutableStateOf("") }
     var obs by remember { mutableStateOf("") }
 
-    var showTimePicker by remember { mutableStateOf(false) }
-    var isSelectingStart by remember { mutableStateOf(true) }
+    var showTimePickerFor by remember { mutableStateOf<String?>(null) }
 
-    fun openTimePicker(isStart: Boolean) {
-        isSelectingStart = isStart
-        showTimePicker = true
-    }
-
-    if (showTimePicker) {
-        val currentTimeStr = if (isSelectingStart) start else end
-        val (initHour, initMinute) = if (currentTimeStr.contains(":")) {
-            val parts = currentTimeStr.split(":")
+    if (showTimePickerFor != null) {
+        val timeToEdit = if (showTimePickerFor == "start") start else end
+        val (initHour, initMinute) = if (timeToEdit.contains(":")) {
+            val parts = timeToEdit.split(":")
             parts[0].toInt() to parts[1].toInt()
         } else {
             12 to 0
         }
 
         KmpTimePickerDialog(
-            onDismiss = { showTimePicker = false },
+            onDismiss = { showTimePickerFor = null },
             onConfirm = { time ->
-                if (isSelectingStart) start = time else end = time
-                showTimePicker = false
+                if (showTimePickerFor == "start") {
+                    start = time
+                } else {
+                    end = time
+                }
+                showTimePickerFor = null
             },
             initialHour = initHour,
             initialMinute = initMinute
@@ -164,8 +162,8 @@ fun ActivityForm(onSubmit: (ActivityLog) -> Unit) {
         StandardTextField(value = area, onValueChange = { area = it }, label = "Talhão")
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TimePickerField(value = start, label = "Início", onClick = { openTimePicker(true) }, modifier = Modifier.weight(1f))
-            TimePickerField(value = end, label = "Fim", onClick = { openTimePicker(false) }, modifier = Modifier.weight(1f))
+            TimePickerField(value = start, label = "Início", onClick = { showTimePickerFor = "start" }, modifier = Modifier.weight(1f))
+            TimePickerField(value = end, label = "Fim", onClick = { showTimePickerFor = "end" }, modifier = Modifier.weight(1f))
         }
 
         StandardTextField(value = obs, onValueChange = { obs = it }, label = "Observações")
@@ -175,11 +173,7 @@ fun ActivityForm(onSubmit: (ActivityLog) -> Unit) {
         ActionButton(
             text = "Salvar",
             onClick = {
-                onSubmit(ActivityLog(
-                    Clock.System.now().toEpochMilliseconds().toString(),
-                    type, area, start, end, obs,
-                    Clock.System.now().toEpochMilliseconds()
-                ))
+                onSubmit(type, area, start, end, obs)
             },
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,

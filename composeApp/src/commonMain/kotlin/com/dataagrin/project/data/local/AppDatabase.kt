@@ -24,6 +24,9 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertActivity(activity: ActivityLog)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertActivities(activities: List<ActivityLog>)
+
     @Query("SELECT * FROM activities ORDER BY timestamp DESC")
     fun getActivities(): Flow<List<ActivityLog>>
 

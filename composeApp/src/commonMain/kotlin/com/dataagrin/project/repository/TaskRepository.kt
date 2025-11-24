@@ -51,6 +51,11 @@ class TaskRepository(private val dao: AppDao, private val postgrest: Postgrest) 
                 Task("3", "Verificação de irrigação", "Setor 5", "14:00", TaskStatus.PENDING)
             )
             dao.insertTasks(initial)
+            try {
+                tasksTable.insert(initial)
+            } catch (e: Exception) {
+                println("Seed initial data to Supabase failed: ${e.message}")
+            }
         }
     }
 }
