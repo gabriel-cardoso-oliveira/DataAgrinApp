@@ -1,35 +1,52 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# DataAgrinApp
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+Este é um projeto de exemplo que demonstra um aplicativo de gerenciamento agrícola construído com Kotlin Multiplatform. Ele inclui funcionalidades como visualização do clima, gerenciamento de tarefas.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
-
-### Build and Run Android Application
-
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+### Recursos:
+*   **Clima em Tempo Real:** Obtém a previsão do tempo com base na localização do dispositivo.
+*   **Gerenciamento de Tarefas:** Crie e acompanhe tarefas agrícolas.
+*   **Sincronização Offline:** Os dados são salvos localmente, permitindo que o app funcione mesmo sem internet.
+*   **Multiplataforma:** Código compartilhado entre Android e iOS.
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## Começando
+
+### 1. Como Executar o Aplicativo
+
+#### Android
+
+Para compilar e executar a versão de desenvolvimento do aplicativo Android, use a configuração de execução na barra de ferramentas do seu Android Studio ou execute o comando diretamente no terminal:
+
+*   No macOS/Linux:
+    ```shell
+    ./gradlew :composeApp:assembleDebug
+    ```
+*   No Windows:
+    ```shell
+    .\gradlew.bat :composeApp:assembleDebug
+    ```
+
+#### iOS
+
+Para compilar e executar a versão de desenvolvimento do aplicativo iOS, use a configuração de execução na barra de ferramentas do seu IDE ou abra o diretório `/iosApp` no Xcode e execute por lá.
+
+---
+
+### Arquitetura e Estrutura do Projeto
+
+Este projeto segue a arquitetura **MVVM (Model-View-ViewModel)**, que promove uma clara separação de responsabilidades, facilitando a manutenção e a testabilidade do código.
+
+*   `./composeApp/src`: Contém o código Kotlin compartilhado entre Android e iOS.
+    *   `commonMain`: Código comum para todos os alvos.
+        *   `model`: **(Model)** Contém as classes de dados (`Task`, `WeatherEntity`, etc.) que representam a informação do aplicativo.
+        *   `ui`: **(View)** Contém os Composables do Jetpack Compose que formam a interface do usuário (`DashboardScreen`, `WeatherScreen`, etc.). As telas são reativas e observam as mudanças nos ViewModels.
+        *   `viewmodel`: **(ViewModel)** Contém as classes (`TaskViewModel`, `WeatherViewModel`, etc.) que preparam e gerenciam os dados para a UI. Eles sobrevivem a mudanças de configuração e expõem os dados através de `StateFlow`.
+        *   `repository`: Contém as classes responsáveis por buscar e gerenciar os dados, decidindo se eles devem vir do banco de dados local (Room) ou da API remota (Supabase/Weather API).
+        *   `di`: Contém a configuração de injeção de dependência (Koin), que conecta todas as camadas.
+        *   `data`: Contém a configuração do banco de dados local (`AppDatabase`) e dos clientes de rede (`WeatherApi`).
+    *   `androidMain` e `iosMain`: Contém código específico da plataforma, como a inicialização do banco de dados e a implementação do `LocationTracker`.
+
+*   `./iosApp`: Contém o projeto Xcode para o aplicativo iOS.
+
+Saiba mais sobre [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html).
