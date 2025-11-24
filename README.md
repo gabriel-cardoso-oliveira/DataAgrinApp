@@ -36,6 +36,8 @@ CREATE TABLE public.tasks (
   status TEXT CHECK (status IN ('PENDING', 'IN_PROGRESS', 'COMPLETED')),
   created_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
+
+ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
 ```
 
 ### 3. Como Executar o Aplicativo
